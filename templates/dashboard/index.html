@@ -1,0 +1,38 @@
+{% extends "dashboard/base.html" %}
+
+{% load static %}
+{% block title %}{% endblock title %}
+{% block activesidebar %}active{% endblock activesidebar %}
+{% block body %}
+
+<main class="main dashboard-main sec-padding">
+    <div class="container">
+        <div class="row">
+            
+            {% include "dashboard/common/sidebar.html" %}
+
+          <div class="col-xl-10 col-lg-9">
+             <div class="tab-content p-4 rounded-4 bg-light" id="v-pills-tabContent">
+
+               {% include "dashboard/pages/home.html" %}
+
+               {% include "dashboard/pages/all_drivers.html" %}
+
+               {% include "dashboard/pages/personal.html" %}
+
+               {% include "dashboard/pages/vehical.html" %}
+
+               {% include "dashboard/pages/rides.html" %}
+
+               {% include "dashboard/pages/chats.html" %}
+               
+               {% include "dashboard/pages/settings.html" %}
+
+
+             </div>
+          </div>
+       </div>
+    </div>
+ </main>
+
+{% endblock body %}

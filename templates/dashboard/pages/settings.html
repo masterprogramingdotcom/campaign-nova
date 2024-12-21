@@ -1,0 +1,77 @@
+{% load static %}
+
+<div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+    <div class="profile-settings">
+       <div class="profile-cover position-relative rounded">
+          <div class="profile-header" style="background-image: url('images/taxi-cover.jpg')">
+             <button class="edit-cover btn btn-sm btn-info"><i class="fa fa-camera me-2"></i>Edit Cover Photo</button>
+             <div class="profile-avatar d-flex align-items-center ps-4">
+                <div class="avatar"><img src="{% static 'images/tm6.png' %}" alt=""></div>
+                <div class="avatar-details ms-4">
+                   <h2 class="text-info">Steven Smith</h2>
+                   <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#edit-profile">Edit
+                   Profile<i class="fa fa-pen-to-square"></i></button>
+                </div>
+             </div>
+          </div>
+       </div>
+       <div class="row mt-4">
+          <div class="col-lg-12">
+             <div class="d-flex align-items-center justify-content-between mb-4">
+                <h3>Personal Info</h3>
+                <a href="#" class="btn-link"><i class="fa fa-pen-to-square"></i> Edit</a>
+             </div>
+             <div class="card rounded-4 bg-light">
+                <form action="#">
+                   <div class="form-group half-form">
+                      <label for="fname">First Name</label>
+                      <input class="form-control" name="fname" type="text" placeholder="Steven" readonly="">
+                   </div>
+                   <div class="form-group half-form">
+                      <label for="lname">Last Name</label>
+                      <input class="form-control" name="lname" type="text" placeholder="Smith" readonly="">
+                   </div>
+                   <div class="form-group half-form">
+                      <label for="fname">Email</label>
+                      <input class="form-control" name="fname" type="email" placeholder="stevesmith20@gmail.com" readonly="">
+                   </div>
+                   <div class="form-group half-form">
+                      <label for="gender">Gender</label>
+                      <input class="form-control" name="gender" type="text" placeholder="Male" readonly="">
+                   </div>
+                   <div class="form-group half-form">
+                      <label for="fname">Birth Date</label>
+                      <input class="form-control" name="fname" type="text" placeholder="1st May 2024" readonly="">
+                   </div>
+                   <div class="form-group half-form">
+                      <label for="fname">Phone Number</label>
+                      <input class="form-control" name="fname" type="text" placeholder="+88-928-282-123" readonly="">
+                   </div>
+                   <div class="form-group half-form">
+                      <label for="nationality">Nationality</label>
+                      <input class="form-control" name="nationality" type="text" placeholder="Bangladeshi" readonly="">
+                   </div>
+                   <div class="form-group half-form">
+                      <label for="Experience">Experience</label>
+                      <input class="form-control" name="Experience" type="text" placeholder="10 Years" readonly="">
+                   </div>
+                   <div class="form-group half-form">
+                      <label for="fname">Complete Trips</label>
+                      <input class="form-control" name="fname" type="text" placeholder="57" readonly="">
+                   </div>
+                   <div class="form-group half-form">
+                      <label for="fname">Cancel Trips</label>
+                      <input class="form-control" name="fname" type="text" placeholder="12" readonly="">
+                   </div>
+                   <div class="form-group">
+                      <label for="yourself">About Yourself</label>
+                      <textarea rows="6" class="form-control" name="yourself" type="text" placeholder="12" readonly="">I'm Steve Smith, working for rideNexa 10 years. Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil temporibus deserunt dolore ut, deleniti alias quia eius omnis tenetur et perspiciatis consequatur, aspernatur debitis non sed quisquam harum numquam autem dolor aliquid amet. Sint totam enim explicabo. Ratione accusantium fugiat, atque rem dolor nisi dolore, asperiores aperiam deserunt numquam autem?
+                      </textarea>
+                   </div>
+                   <div class="text-center"><button class="btn btn-primary mt-4">Save</button></div>
+                </form>
+             </div>
+          </div>
+       </div>
+    </div>
+ </div>

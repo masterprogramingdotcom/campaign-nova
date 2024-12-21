@@ -1,0 +1,88 @@
+{% load static %}
+<header class="header static bg-dark py-3">
+    <nav class="navigation">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-2 col-lg-3 col-sm-4">
+                    <div class="logo-branding">
+                        <button class="d-lg-none" type="button" data-bs-toggle="offcanvas" 
+                            data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                            <i class="fw-bold fa-solid fa-sliders-h"></i>
+                        </button>
+                        <a class="navbar-brand" href="{% url "index" %}">
+                            <img src="{{company.logo_white.url}}" alt="logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-6 d-none d-lg-block col-lg-6">
+                    <form class="loc-search search-form position-relative">
+                        <input type="search" class="rounded" placeholder="Search location....">
+                        <button><i class="fa fa-search"></i></button>
+                    </form>
+                </div>
+                <div class="col-xl-2 offset-xl-2 col-sm-8 col-lg-3">
+                    <div class="header-controls">
+                        <div class="align-items-center d-flex justify-content-between">
+                            <div class="inbox-control">
+                                {% comment %} <button data-bs-toggle="modal" data-bs-target="#chatTrigger">
+                                    <i class="fa-brands fa-rocketchat"></i>
+                                </button> {% endcomment %}
+                            </div>
+                            <div class="notify-control dropdown">
+                                <button class="dropdown-toggle" type="button" 
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-bell"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li class="d-flex">
+                                        <div class="avatar">
+                                            <img src="{% static 'images/avatar.png' %}" alt="Avatar">
+                                        </div>
+                                        <div class="notify-status ms-2">
+                                            <h4 class="h6 mb-0">Trip id #292983-A has started</h4>
+                                            <span class="d-block small text-end">2 hours ago</span>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex">
+                                        <div class="avatar">
+                                            <img src="{% static 'images/avatar.png' %}" alt="Avatar">
+                                        </div>
+                                        <div class="notify-status ms-2">
+                                            <h4 class="h6 mb-0">Trip id #292983-A has Completed</h4>
+                                            <span class="d-block small text-end">1 hours ago</span>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex">
+                                        <div class="avatar">
+                                            <img src="{% static 'images/avatar.png' %}" alt="Avatar">
+                                        </div>
+                                        <div class="notify-status ms-2">
+                                            <h4 class="h6 mb-0">Trip id #292983-A has started</h4>
+                                            <span class="d-block small text-end">2 hours ago</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="profile-control dropdown">
+                                <button class="dropdown-toggle" type="button" 
+                                    id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {% if request.user.profile.profile_picture %}
+                                    <img width="40" height="40" class="rounded-circle" src="{{request.user.profile.profile_picture.url}}" alt="Avatar">
+                                    {% else %}
+                                    <img class="rounded-circle" src="{% static 'images/avatar.png' %}" alt="Avatar">
+                                    {% endif %}
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    <li><a class="dropdown-item" href="#"><i class="fa fa-user"></i> Profile</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fa fa-gear"></i> Settings</a></li>
+                                    <li><a class="dropdown-item" href="{% url "logout" %}"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>

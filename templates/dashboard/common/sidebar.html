@@ -1,0 +1,84 @@
+{% load static %}
+
+<div class="col-lg-3 col-xl-2">
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas-header d-lg-none mb-3 py-4">
+            <div class="logo">
+                <a class="display-6" href="index-2.html">
+                    <img src="{% static 'images/logo-alt.png' %}" alt="Logo">
+                </a>
+            </div>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="timeline-navigation">
+                <nav class="menu-wrap me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <ul>
+                        <li>
+                            <a href="{% url "dashboard-home" %}" class="nav-link " id="v-pills-home-tab" >
+                                <img src="{% static 'images/icons/report.png' %}" alt="Dashboard">Dashboard
+                            </a>
+                        </li>
+                        {% if request.user.is_superuser %}
+                        <li>
+                            <a class="nav-link" id="v-pills-drivers-tab" data-bs-toggle="pill" data-bs-target="#v-pills-drivers" role="tab" aria-controls="v-pills-drivers" aria-selected="false">
+                                <img src="{% static 'images/icons/license.png' %}" alt="Drivers">All Drivers
+                            </a>
+                        </li>
+
+                        {% endif %}
+                        <li>
+                            <a class="nav-link" id="v-pills-info-tab" href="{% url "profile" %}">
+                                <img src="{% static 'images/icons/d-driver.png' %}" alt="Personal Info">Personal Info
+                            </a>
+                        </li>
+
+                        {% if request.user.is_superuser %}
+                        <li>
+                            <a class="nav-link" id="v-pills-vehicles-tab" data-bs-toggle="pill" data-bs-target="#v-pills-vehicles" role="tab" aria-controls="v-pills-vehicles" aria-selected="false">
+                                <img src="{% static 'images/icons/d-car.png' %}" alt="Vehicles">Vehicles
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <a class="nav-link" id="v-pills-rides-tab" data-bs-toggle="pill" data-bs-target="#v-pills-rides" role="tab" aria-controls="v-pills-rides" aria-selected="false">
+                                <img src="{% static 'images/icons/business-report.png' %}" alt="Rides">Rides
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" id="v-pills-reports-tab" data-bs-toggle="pill" data-bs-target="#v-pills-reports" role="tab" aria-controls="v-pills-reports" aria-selected="false">
+                                <img src="{% static 'images/icons/report.png' %}" alt="Chats">Chats
+                            </a>
+                        </li>
+                        {% if request.user.is_superuser %}
+                        <li>
+                            <a class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">
+                                <img src="{% static 'images/icons/admin.png' %}" alt="Settings">Settings
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <li>
+                            <a class="nav-link" href="{% url "logout" %}">
+                                <img width="32" height="32" src="{% static 'images/icons/logout.png' %}" alt="Logout">Logout
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="footer-nav">
+                    <div class="footer-menu py-2">
+                        <ul>
+                            <li><a href="{% url "about" %}">About</a></li>
+                            <li><a href="{% url "index" %}">Blog</a></li>
+                            <li><a href="{% url "contact" %}">Contact Us</a></li>
+                            <li><a href="{% url "index" %}">Book Now</a></li>
+                        </ul>
+                    </div>
+                    <div class="copy-rights text-muted">
+                        <p>© 2024 RideNexa</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

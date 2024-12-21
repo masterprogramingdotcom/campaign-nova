@@ -1,0 +1,119 @@
+{% load static %}
+
+<header class="header header-white">
+    <div class="top-bar bg-light">
+        <div class="container">
+            <!-- Mobile Quick Connect Dropdown -->
+            <div class="top-info dropdown d-lg-none">
+                <a class="topbar-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Quick Connect</a>
+                <ul class="dropdown-menu shadow-sm">
+                    <li><a class="dropdown-item" href="tel:{{ company.mobile_number }}"><img src="{% static 'images/icons/phone-call.png' %}" alt="Phone">{{ company.mobile_number }}</a></li>
+                    <li><a class="dropdown-item" href="mailto:{{ company.email }}"><img src="{% static 'images/icons/email.png' %}" alt="Email">{{ company.email }}</a></li>
+                    <li><span><img src="{% static 'images/icons/location.png' %}" alt="Location">{{ company.address }}</span></li>
+                </ul>
+            </div>
+            <!-- Desktop Top Info -->
+            <div class="top-info d-none d-lg-block">
+                <ul class="list-group list-group-horizontal list-unstyled">
+                    <li class="list-item-inline">
+                        <a href="tel:{{ company.mobile_number }}"><img src="{% static 'images/icons/phone-call.png' %}" alt="Phone">{{ company.mobile_number }}</a>
+                    </li>
+                    <li class="list-item-inline">
+                        <a href="mailto:{{ company.email }}"><img src="{% static 'images/icons/email.png' %}" alt="Email">{{ company.email }}</a>
+                    </li>
+                    <li class="list-item-inline">
+                        <span><img src="{% static 'images/icons/location.png' %}" alt="Location">{{ company.address }}</span>
+                    </li>
+                </ul>
+            </div>
+            <!-- Language Select and Dashboard Link -->
+            <div class="top-connect d-flex align-items-center">
+                <div class="language-select d-none d-sm-block">
+                    <select id="select">
+                        <option value="en">English</option>
+                        <option value="hi">Hindi</option>
+                    </select>
+                </div>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'dashboard-home' %}" class="ms-3"><i class="fa fa-users me-2"></i>{{request.user.get_full_name | title}} - Dashboard</a>
+                
+                {% else %}
+                <a href="{% url 'login' %}" class="ms-3"><i class="fa fa-users me-2"></i>Login Now</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg  mt-2">
+        <div class="container rounded-4 bg-info">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{{ company.logo_black.url }}" alt="Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="toggle-inner"></span>
+            </button>
+            <div class="nav-cta d-none d-sm-block order-lg-3">
+                <div class="d-flex align-items-center">
+                    {% comment %} <div class="dropdown nav-search">
+                        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-search text-dark"></i>
+                        </a>
+                        <div class="dropdown-menu shadow-sm border-0">
+                            <form class="input-group">
+                                <input class="form-control border-light" type="search" placeholder="Your destination..." aria-label="Search">
+                                <button class="btn btn-primary m-0" type="submit">Search</button>
+                            </form>
+                        </div>
+                    </div> {% endcomment %}
+                    <a href="{% url 'index' %}" class="btn btn-outline-dark d-none d-md-block">Book Now</a>
+                    <a href="{% url 'index' %}" class="btn btn-primary ms-2">Get Started</a>
+                </div>
+            </div>
+            <div class="collapse navbar-collapse oder-lg-2" id="navbarSupportedContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About Us</a></li>
+                    {% comment %} <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Services</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'index' %}">All Services</a></li>
+                            <li><a class="dropdown-item" href="{% url 'index' %}">Service Details</a></li>
+                        </ul>
+                    </li> {% endcomment %}
+                    {% comment %} <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Blog</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'index' %}">Blog List</a></li>
+                            <li><a class="dropdown-item" href="{% url 'index' %}">Blog Details</a></li>
+                        </ul>
+                    </li>
+                     {% endcomment %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+
+                                        
+                    {% if request.user.profile.user_type.type_name == "driver" %}
+                    
+                    <li class="nav-item"><a class="nav-link" href="{% url 'driver_accept_ride_notification' %}">Driver</a></li>
+  
+                    {% endif %}
+                    
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="custom-alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+</header>
+
+

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  OTP Verification
+{% endblock %}
+
+{% block body %}
+
+  {% include 'home/others_common/header.html' %}
+
+  <section class="promo-sec" style="background: url('{% static "images/promo-bg.jpg" %}') no-repeat center center / cover;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="promo-wrap text-center">
+            <h2 class="fw-bold text-white text-uppercase">OTP Verification</h2>
+            <nav aria-label="breadcrumb w-75 mx-auto">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{% url 'index' %}">Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">OTP Verification</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main sec-padding my-account">
+    <div class="container">
+      <div class="row g-0 ct-bg">
+        <div class="col-lg-6 bg-cover" style="background-image: url('{% static 'images/sign-in.png' %}');">
+        </div>
+        <div class="col-lg-6">
+          <div class="signup-form">
+            <h2 class="sub-title border-bottom pb-4">Enter OTP</h2>
+            <p class="text-muted">A verification code has been sent to your mobile number. Please enter it below to verify your account.</p>
+            <form id="otp-form">
+              {% csrf_token %}
+              <div class="mb-3">
+                <input class="form-control" type="text" name="otp" placeholder="Enter OTP *" required maxlength="6" pattern="\d{6}">
+              </div>
+              <div class="d-flex justify-content-between">
+                <a href="#" id="resend-otp">Resend OTP</a>
+                <span id="timer" class="text-muted"></span>
+              </div>
+              <button type="button" class="btn btn-primary mt-3" id="verify-otp">Verify OTP</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      let countdownTime = 60; // Countdown time in seconds
+      let countdownTimer; // Timer variable
+
+      function updateTimer() {
+        if (countdownTime > 0) {
+          $('#timer').text(`Resend OTP in ${countdownTime} seconds`);
+          countdownTime--;
+        } else {
+          clearInterval(countdownTimer);
+          $('#resend-otp').show(); // Show the resend OTP link
+          $('#timer').text(''); // Clear the timer text
+        }
+      }
+
+      function startCountdown() {
+        $('#resend-otp').hide(); // Hide resend OTP initially
+        countdownTimer = setInterval(updateTimer, 1000); // Update every second
+      }
+
+      // Event to generate OTP
+    $('#resend-otp').on('click', function (e) {
+      e.preventDefault(); // Prevent default button action
+
+      // Reload the page to generate a new OTP
+      window.location.reload(); // This will reload the current page
+    });
+
+      // Event to verify OTP 
+    $('#verify-otp').on('click', function () {
+      if ($('#otp-form')[0].checkValidity()) { // Validate form
+          // Get the username from the current URL
+          const urlParams = new URLSearchParams(window.location.search);
+          const username = urlParams.get('username');
+
+          $.ajax({
+              type: 'POST',
+              url: '{% url "otp-verify" %}', // URL to the OTP verify view
+              data: {
+                  otp: $('input[name="otp"]').val(), // Get OTP value
+                  username: username, // Include the username from URL
+                  csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+              },
+              success: function (response) {
+                  alert(response.message);
+                  if (response.success) {
+                      window.location.href = '{% url "index" %}'; // Redirect on success
+                  }
+              },
+              error: function (xhr) {
+                  alert(xhr.responseJSON.message);
+              }
+          });
+      } else {
+          alert('Please enter a valid OTP.');
+      }
+    });
+
+      // CSRF token setup for AJAX
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+          }
+        }
+      });
+
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      startCountdown(); // Start the countdown on page load
+    });
+  </script>
+
+  {% include 'home/common/footer.html' %}
+{% endblock %}

@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  Login
+{% endblock %}
+
+{% block body %}
+
+  {% include 'home/others_common/header.html' %}
+
+  <section class="promo-sec" style="background: url('{% static "images/promo-bg.jpg" %}') no-repeat center center / cover;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="promo-wrap text-center">
+            <h2 class="fw-bold text-white text-uppercase">Register</h2>
+            <nav aria-label="breadcrumb w-75 mx-auto">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{% url "index" %}">Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Register</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+
+
+<main class="main sec-padding my-account">
+  <div class="container">
+      <div class="row g-0 ct-bg">
+          <div class="col-lg-6 bg-cover" style="background-image: url('{% static 'images/sign-in.png' %}');">
+          </div>
+          <div class="col-lg-6">
+              <div class="signup-form">
+                  <h2 class="sub-title border-bottom pb-4">Sign Up</h2>
+                  <ul class="nav nav-pills mb-3 pt-4" id="pills-tab" role="tablist">
+                      <li class="nav-item me-4" role="presentation">
+                          <button class="nav-link text-uppercase active" id="pills-rider-tab" data-bs-toggle="pill" data-bs-target="#pills-rider" type="button" role="tab" aria-controls="pills-rider" aria-selected="true">Sign Up to Ride</button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                          <button class="nav-link text-uppercase" id="pills-driver-tab" data-bs-toggle="pill" data-bs-target="#pills-driver" type="button" role="tab" aria-controls="pills-driver" aria-selected="false" tabindex="-1">Sign Up to Drive</button>
+                      </li>
+                  </ul>
+                  <div class="tab-content pt-4" id="pills-tabContent">
+                      <div class="tab-pane fade active show" id="pills-rider" role="tabpanel" aria-labelledby="pills-rider-tab">
+                          
+                        <form id="rider-form">
+                          {% csrf_token %}
+                          <div class="mb-3">
+                              <input class="form-control" type="text" name="first_name" placeholder="First Name *" required>
+                          </div>
+                          <div class="mb-3">
+                              <input class="form-control" type="text" name="last_name" placeholder="Last Name *" required>
+                          </div>
+                          <div class="mb-3">
+                              <input class="form-control" type="number" name="mobile_number" placeholder="Mobile Number *" required>
+                          </div>
+                          <div class="mb-3">
+                              <input class="form-control" type="email" name="email" placeholder="Email" required>
+                          </div>
+                          <div class="mb-3">
+                              <input class="form-control" type="password" name="password" placeholder="Password *" required>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <a href="#">Forget Password</a>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                                <label class="form-check-label" for="flexCheckChecked">
+                                    Remember Me
+                                </label>
+                            </div>
+                        </div>
+
+                          <button type="button" class="btn btn-primary mt-3" id="signup-rider">Sign Up to Ride</button>
+                          <p>Already Have Account?<a href="{% url "login" %}"> Sign in</a></p>                      
+                        </form>
+
+                         
+                      </div>
+                      <div class="tab-pane fade" id="pills-driver" role="tabpanel" aria-labelledby="pills-driver-tab">
+                          
+                        <form id="driver-form">
+                          {% csrf_token %}
+                          <div class="mb-3">
+                              <input class="form-control" type="text" name="first_name" placeholder="First Name *" required>
+                          </div>
+                          <div class="mb-3">
+                              <input class="form-control" type="text" name="last_name" placeholder="Last Name *" required>
+                          </div>
+                          <div class="mb-3">
+                              <input class="form-control" type="number" name="mobile_number" placeholder="Mobile Number *" required>
+                          </div>
+                          <div class="mb-3">
+                              <input class="form-control" type="email" name="email" placeholder="Email" required>
+                          </div>
+                          <div class="mb-3">
+                              <input class="form-control" type="password" name="password" placeholder="Password *" required>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <a href="#">Forget Password</a>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                                <label class="form-check-label" for="flexCheckChecked">
+                                    Remember Me
+                                </label>
+                            </div>
+                        </div>
+
+                          <button type="button" class="btn btn-primary mt-3" id="signup-driver">Sign Up to Drive</button>
+                          <p>Already Have Account?<a href="{% url "login" %}"> Sign in</a></p>
+                          
+                      </form>
+
+                        
+                      </div>
+                  </div> 
+              </div>
+          </div>
+      </div>
+  </div>
+</main>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function () {
+      // Handle rider signup
+      $('#signup-rider').on('click', function () {
+          if ($('#rider-form')[0].checkValidity()) { // Validate form
+              $.ajax({
+                  type: 'POST',
+                  url: '{% url "register" %}', // URL to the register view
+                  data: $('#rider-form').serialize() + '&user_type=customer', // Include user type
+                  success: function (response) {
+                      alert(response.message);
+                      $('#rider-form')[0].reset();
+                      window.location.href = `../../accounts/otp-verify?username=${response.username}&usertype=${response.usertype}`; // Redirect to OTP page
+
+                  },
+                  error: function (xhr) {
+                      alert(xhr.responseJSON.messages);
+                  }
+              });
+          } else {
+              alert('Please fill out all required fields correctly.');
+          }
+      });
+  
+      // Handle driver signup
+      $('#signup-driver').on('click', function () {
+          if ($('#driver-form')[0].checkValidity()) { // Validate form
+              $.ajax({
+                  type: 'POST',
+                  url: '{% url "register" %}', // URL to the register view
+                  data: $('#driver-form').serialize() + '&user_type=driver', // Include user type
+                  success: function (response) {
+                      alert(response.message);
+                      debugger
+                      $('#driver-form')[0].reset(); 
+                      window.location.href = `../../accounts/otp-verify?username=${response.username}&usertype=${response.usertype}`; // Redirect to OTP page
+                  },
+                  error: function (xhr) {
+                      alert(xhr.responseJSON.messages);
+                  }
+              });
+          } else {
+              alert('Please fill out all required fields correctly.');
+          }
+      });
+  
+      // Set up CSRF token for AJAX requests
+      $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+              if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                  // Only send the token to relative URLs
+                  xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+              }
+          }
+      });
+  
+      // Function to get CSRF token from cookies
+      function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+  });
+  </script>
+
+  
+  {% include 'home/common/footer.html' %}
+{% endblock %}

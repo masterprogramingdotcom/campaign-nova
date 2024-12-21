@@ -1,0 +1,136 @@
+{% extends "dashboard/base.html" %}
+
+{% load static %}
+{% block title %}Profile{% endblock title %}
+{% block activesidebar %}active{% endblock activesidebar %}
+{% block body %}
+
+<main class="main dashboard-main sec-padding">
+    <div class="container">
+        <div class="row">
+            
+            {% include "dashboard/common/sidebar.html" %}
+
+          <div class="col-xl-10 col-lg-9">
+             <div class="tab-content p-4 rounded-4 bg-light" id="v-pills-tabContent">
+
+                <div class="tab-pane fade active show" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+
+                    <div class="row dash-status">
+                       
+                       
+                       <div class="col-xl-12 col-md-12">
+                          
+
+                            <div class="row">
+                            <div class="col-lg-12">
+                                <div class="d-flex align-items-center justify-content-between mb-4">
+                                    <h3>Personal Info</h3>
+                                    <a href="#" class="btn-link"><i class="fa fa-pen-to-square"></i> Edit</a>
+                                </div>
+                                <div class="card rounded-4 bg-light">
+                                    <form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        
+                                        <div class="form-group half-form">
+                                            <label for="first_name">First Name</label>
+                                            <input class="form-control" id="first_name" name="first_name" type="text" value="{{ request.user.first_name }}" >
+                                        </div>
+                                        
+                                        <div class="form-group half-form">
+                                            <label for="last_name">Last Name</label>
+                                            <input class="form-control" id="last_name" name="last_name" type="text" value="{{ request.user.last_name }}" >
+                                        </div>
+                                        
+                                        <div class="form-group half-form">
+                                            <label for="email">Email</label>
+                                            <input class="form-control" id="email" name="email" type="email" value="{{ request.user.email }}" readonly>
+                                        </div>
+                                        
+                                        <div class="form-group half-form">
+                                            <label for="gender">Gender</label>
+                                            <input class="form-control" id="gender" name="gender" type="text" value="{{ profile.gender }}" readonly>
+                                        </div>
+                                        
+                                        <div class="form-group half-form">
+                                            <label for="birth_date">Birth Date</label>
+                                            <input class="form-control" id="birth_date" name="birth_date" type="date" value="{{ profile.birth_date|date:'d/m/Y' }}" readonly>
+                                        </div>
+                                        
+                                        <div class="form-group half-form">
+                                            <label for="phone_number">Phone Number</label>
+                                            <input class="form-control" id="phone_number" name="phone_number" type="text" value="{{ profile.mobile_number }}" readonly>
+                                        </div>
+                                        
+                                        <div class="form-group half-form">
+                                            <label for="nationality">Nationality</label>
+                                            <input class="form-control" id="nationality" name="nationality" type="text" value="{{ profile.nationality }}">
+                                        </div>
+                                        
+                                        <div class="form-group half-form">
+                                            <label for="experience">Experience</label>
+                                            <input class="form-control" id="experience" name="experience" type="text" value="{{ profile.experience }}" >
+                                        </div>
+                                        
+                                         <!-- Optional file upload fields -->
+                                        <div class="form-group mt-2">
+                                            <label for="aadhar_card">Aadhar Card (*)</label>
+                                            <input type="file" class="form-control" id="aadhar_card" name="aadhar_card" required>
+                                            {% if profile.aadhar_card %}
+                                                <p>Current Aadhar Card: <a href="{{ profile.aadhar_card.url }}">View</a></p>
+                                            {% endif %}
+                                        </div>
+
+                                        
+                                        <div class="form-group mt-2">
+                                            <label for="voter_id_card">Voter ID Card (optional)</label>
+                                            <input type="file" class="form-control" id="voter_id_card" name="voter_id_card">
+                                            {% if profile.voter_id_card %}
+                                                <p>Current Voter ID Card: <a href="{{ profile.voter_id_card.url }}">View</a></p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <label for="pan_card">PAN Card (optional)</label>
+                                            <input type="file" class="form-control" id="pan_card" name="pan_card">
+                                            {% if profile.pan_card %}
+                                                <p>Current PAN Card: <a href="{{ profile.pan_card.url }}">View</a></p>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="text-center mt-4">
+                                            <button class="btn btn-primary" id="save-button" type="submit" >Save</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            </div>
+
+
+                       </div>
+     
+                  
+               </div>
+
+
+             </div>
+          </div>
+       </div>
+    </div>
+ </main>
+ <script>
+    // JavaScript to enable editing
+    document.getElementById("edit-button").addEventListener("click", function(event) {
+        event.preventDefault();
+        
+        // Enable all input fields for editing
+        let inputs = document.querySelectorAll(".form-control");
+        inputs.forEach(function(input) {
+            input.removeAttribute("readonly");
+        });
+        
+        // Enable the save button
+        document.getElementById("save-button").removeAttribute("disabled");
+    });
+</script>
+
+{% endblock body %}

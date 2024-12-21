@@ -1,0 +1,265 @@
+<form action="#" class="mt-4 pickup-form">
+
+      <!-- One-Way and Round-Trip Options -->
+
+        <div class="trip-type d-flex gap-3 mt-3 align-items-center">
+            <div class="form-check">
+            <input class="form-check-input" type="radio" name="trip-type" value="one-way" id="one-way" checked>
+            <label style="margin-left:3px;" class="form-check-label" for="one-way">
+                One-Way
+            </label>
+            </div>
+            <div class="form-check">
+            <input class="form-check-input" type="radio" name="trip-type" value="round-trip" id="round-trip">
+            <label style="margin-left:3px;" class="form-check-label" for="round-trip">
+                Round-Trip
+            </label>
+            </div>
+        </div>
+      
+
+    <div class="d-flex gap-3 mt-2">
+        <!-- Pickup Location Input -->
+        <div class="pickup-lc form-group flex-grow-1">
+            <input type="search" id="pickup-location" placeholder="Pickup location" class="form-control" required autocomplete="off">
+            <div id="pickup-suggestions" class="suggestions"></div> <!-- Suggestions container -->
+            <div id="pickup-location-display" class="location-display"></div> <!-- Display selected pickup location -->
+        </div>
+        
+        <!-- Drop Location Input -->
+        <div class="drop-lc form-group flex-grow-1">
+            <input type="search" id="drop-location" placeholder="Drop location" class="form-control" required autocomplete="off">
+            <div id="drop-suggestions" class="suggestions"></div> <!-- Suggestions container -->
+            <div id="drop-location-display" class="location-display"></div> <!-- Display selected drop location -->
+        </div>
+    </div>
+    
+    <!-- Vehicle Type Select -->
+    <div class="d-flex gap-3">
+        <div class="drop-lc form-group_1 flex-grow-1 mt-3">
+            <select id="vehicle-type" class="form-control" required>
+                <option value="" disabled selected>Select a vehicle type</option>
+                <option value="all">All</option>
+                <option value="car">Car</option>
+                <option value="bike">Bike</option>
+                <option value="mayuri">Mayuri</option>
+                <option value="auto">Auto</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- Date and Time Inputs -->
+    <div class="d-flex gap-3 mt-3">
+        <div class="form-group_1">
+            <label for="date">Date:</label>
+            <input type="date" class="form-control" id="date" required>
+        </div>
+
+        <div class="form-group_1">
+            <label for="time">Time:</label>
+            <input type="time" class="form-control" id="time" required>
+        </div>
+    </div>
+    
+    <!-- Submit Button -->
+    <a id="find_vehicle" href="javascript:void(0)" class="btn btn-dark mt-4" onclick="updateRideUrl()">Find a Vehicle <i class="fa fa-arrow-right"></i></a>
+</form>
+
+<style>
+    .suggestions {
+        border: 1px solid #ccc;
+        max-height: 150px;
+        overflow-y: auto;
+        display: none;
+        position: relative;
+        background: white;
+        z-index: 1000;
+        width: 100%;
+    }
+    .suggestions div {
+        padding: 8px;
+        cursor: pointer;
+    }
+    .suggestions div:hover {
+        background-color: #f0f0f0;
+    }
+    .location-display {
+        margin-top: 8px;
+        color: #555;
+        font-weight: bold;
+    }
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+
+    function getTripType() {
+        return $('input[name="trip-type"]:checked').val(); // Retrieves the selected trip type
+    }
+
+    
+    function fetchGeoapifySuggestions(inputField, suggestionsContainer) {
+        const query = inputField.value;
+
+        if (query.length > 3) {
+            $.ajax({
+                url: '{% url "google_autocomplete" %}', // URL for backend route handling Geoapify API
+                method: 'GET',
+                data: { text: query },
+                success: function(data) {
+                    const suggestions = data.google_places_results || [];
+                    suggestionsContainer.empty().hide(); // Clear previous suggestions
+                    if (suggestions.length) {
+                        suggestionsContainer.show(); // Show suggestions if there are any
+                        suggestions.forEach(suggestion => {
+                            const addressLine1 = suggestion.description;
+                            const placeId = suggestion.place_id; // Get the place_id from the suggestion
+                            suggestionsContainer.append(`<div class="suggestion-item" data-place-id="${placeId}">${addressLine1}</div>`);
+                        });
+                    }
+                },
+                error: function() {
+                    console.error('Error fetching suggestions');
+                }
+            });
+        } else {
+            suggestionsContainer.empty().hide();
+        }
+    }
+
+    // Event listeners for pickup and drop location fields
+    $('#pickup-location').on('input', function() {
+        fetchGeoapifySuggestions(this, $('#pickup-suggestions'));
+    });
+
+    $('#drop-location').on('input', function() {
+        fetchGeoapifySuggestions(this, $('#drop-suggestions'));
+    });
+
+    // Event listener to handle selecting a suggestion
+    $('.suggestions').on('click', 'div', function() {
+        const selectedText = $(this).text(); // Get the text of the selected suggestion
+        const inputField = $(this).parent().prev('input[type="search"]'); // Find the corresponding input field
+
+        // Set input value to the selected suggestion
+        inputField.val(selectedText);
+        $(this).parent().empty().hide(); // Clear and hide suggestions
+
+        // Display selected suggestion in the display box
+        if (inputField.attr('id') === 'pickup-location') {
+            $('#pickup-location-display').text(`Selected Pickup: ${selectedText}`);
+        } else if (inputField.attr('id') === 'drop-location') {
+            $('#drop-location-display').text(`Selected Drop: ${selectedText}`);
+        }
+
+        // Get the place_id from the clicked suggestion
+        const selectedPlaceId = $(this).data('place-id'); // Assuming you have set data-place-id on each suggestion div
+        inputField.data('place-id', selectedPlaceId); // Store place_id for later use
+    });
+
+    // Optionally, event delegation to handle clicks on suggestion items
+    $('.suggestions').on('click', '.suggestion-item', function() {
+        const selectedPlaceId = $(this).data('place-id'); // Get the place_id of the selected suggestion
+        const selectedAddress = $(this).text(); // Get the displayed address
+
+        // Update the corresponding input field with the selected address
+        const inputField = $(this).closest('.suggestions').prev('input[type="search"]'); // Find the input field
+        inputField.val(selectedAddress); // Set the input field value
+        inputField.data('place-id', selectedPlaceId); // Store place_id for later use
+
+        // Display selected address in the corresponding display box
+        if (inputField.attr('id') === 'pickup-location') {
+            $('#pickup-location-display').text(`Selected Pickup: ${selectedAddress}`);
+        } else if (inputField.attr('id') === 'drop-location') {
+            $('#drop-location-display').text(`Selected Drop: ${selectedAddress}`);
+        }
+
+        // Clear suggestions after selection
+        $(this).parent().empty(); // Clear suggestions
+    });
+
+
+
+    function getPickupPlaceId() {
+        return $('#pickup-location').data('place-id'); // Retrieves the place ID from the pickup input field
+    }
+    
+    function getDropPlaceId() {
+        return $('#drop-location').data('place-id'); // Retrieves the place ID from the drop input field
+    }
+
+
+    function getVehicleType() {
+        return $('#vehicle-type').val(); // Retrieves the selected vehicle type
+    }
+
+    function getDate() {
+        return $('input[type="date"]').val(); // Retrieves the selected date
+    }
+
+    function getTime() {
+        return $('input[type="time"]').val(); // Retrieves the selected time
+    }
+    
+    function updateRideUrl() {
+        const pickupPlaceValue =  document.getElementById("pickup-location").value
+        const dropPlaceValue =  document.getElementById("drop-location").value; // Get the place ID for drop
+        const pickupPlaceId = getPickupPlaceId(); // Get the place ID for pickup
+        const dropPlaceId = getDropPlaceId(); // Get the place ID for drop
+        const vehicleType = getVehicleType(); // Get the selected vehicle type
+        const date = getDate(); // Get the selected date
+        const time = getTime(); // Get the selected time
+        const tripType = getTripType(); // Get the selected trip type
+    
+        // Ensure all required fields are available before constructing the URL
+        if (pickupPlaceId && dropPlaceId && vehicleType && date && time) {
+            const url = `/ride/ride-map/?pickup_place_id=${pickupPlaceId}&drop_place_id=${dropPlaceId}&vehicle_type=${vehicleType}&date=${date}&time=${time}&pickup=${pickupPlaceValue}&drop=${dropPlaceValue}&trip_type=${tripType}`;
+            window.location.href = url; // Redirect to the new URL with all parameters
+        } else {
+            alert("Please fill in all required fields."); // Alert if any required field is missing
+        }
+    }
+    
+    // Event listener for the Find Vehicle button
+    $('#find_vehical').on('click', function(event) {
+        event.preventDefault(); // Prevent default anchor click behavior
+        updateRideUrl(); // Call the function to update the ride URL
+    });
+    
+</script>
+
+<script>
+    // Get the current date and time
+    const now = new Date();
+
+    // Format date as YYYY-MM-DD
+    const currentDate = now.toISOString().split("T")[0];
+
+    // Format time as HH:MM
+    const currentHours = now.getHours();
+    const currentMinutes = now.getMinutes();
+    const currentTime = `${currentHours.toString().padStart(2, '0')}:${currentMinutes.toString().padStart(2, '0')}`;
+
+    // Set the min attribute for the date input
+    document.getElementById("date").setAttribute("min", currentDate);
+
+    // Add event listener to update time input restrictions based on the selected date
+    document.getElementById("date").addEventListener("change", function () {
+        const selectedDate = this.value;
+        const timeInput = document.getElementById("time");
+
+        // If the selected date is today, restrict the time input to current/future times
+        if (selectedDate === currentDate) {
+            timeInput.setAttribute("min", currentTime);
+        } else {
+            // Remove time restriction for future dates
+            timeInput.removeAttribute("min");
+        }
+    });
+
+    // Initialize time input restriction if the page loads with today's date pre-selected
+    if (document.getElementById("date").value === currentDate) {
+        document.getElementById("time").setAttribute("min", currentTime);
+    }
+</script>

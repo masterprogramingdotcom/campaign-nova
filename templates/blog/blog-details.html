@@ -1,0 +1,149 @@
+{% extends "base.html" %} {% load static %} 
+{% block title %}{{blog.title}}{% endblock title %} 
+
+{% block body %} 
+{% include "home/header.html" %}
+
+
+<div class="content blog-details">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12 col-md-10 col-lg-8 mx-auto">
+          <div class="featured-venues-item">
+            <div class="listing-item blog-info">
+              <div class="">
+                {% if blog.image %}
+                  <img src="{{ blog.image.url }}" class="img-fluid" alt="{{ blog.title }}" />
+                {% endif %}
+                <div class="fav-item-venues news-sports">
+                  <span class="tag tag-blue">{{ blog.category.name }}</span>
+                </div>
+              </div>
+              <div class="listing-content news-content">
+                <div class="listing-venue-owner blog-detail-owner d-lg-flex justify-content-between align-items-center">
+                  <div class="navigation">
+                    <img src="{% static 'assets/img/profiles/avatar-01.jpg' %}" alt="User" />
+                    <a href="javascript:void(0);"> {{ blog.author.username }}</a>
+                    <span><i class="feather-calendar"></i>{{ blog.created_at|date:"j M Y" }}</span>
+                    <span><i class="far fa-comment-alt"></i>{{ blog.comments.count }} Comments</span>
+                  </div>
+                  <a class="btn btn-primary" href="#">
+                    {% comment %} <img src="{% static 'assets/img/icons/grid.svg' %}" class="img-fluid" alt="Icon" />Rules of Game {% endcomment %}
+                  </a>
+                </div>
+  
+                <h2 class="listing-title">{{ blog.title }}</h2>
+                <div>{{ blog.content|safe }}</div>
+  
+                
+              </div>
+            </div>
+  
+            <div class="row align-items-center">
+              <div class="col-lg-6">
+                <div class="d-flex align-items-center tags-wrapper">
+                  <h6>Tags:</h6>
+                  <ul class="tags">
+                    {% for tag in blog.tags.all %}
+                      <li><a href="#" class="tag">{{ tag.name }}</a></li>
+                      <li><a href="#" class="tag">{{ tag.name }}</a></li>
+                      <li><a href="#" class="tag">{{ tag.name }}</a></li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="col-lg-6">
+                <div class="d-flex justify-content-lg-end align-items-center social-medias-wrapper">
+                    <h6>Share on:</h6>
+                    <ul class="social-medias d-flex">
+                        <li><a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}&t={{ blog.title }}" target="_blank"><i class="fa-brands fa-facebook-f"></i></a></li>
+                        <li><a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}&title={{ blog.title }}&summary={{ blog.content|truncatewords:30 }}" target="_blank"><i class="fa-brands fa-linkedin"></i></a></li>
+                        <li><a href="https://www.instagram.com/" target="_blank"><i class="fa-brands fa-instagram"></i></a></li>
+                        <li><a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ blog.title }}" target="_blank"><i class="fa-brands fa-twitter"></i></a></li>
+                        <li><a href="https://pinterest.com/pin/create/button/?url={{ request.build_absolute_uri }}&media={{ blog.image.url }}&description={{ blog.title }}" target="_blank"><i class="fa-brands fa-pinterest"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            </div>
+  
+            <div class="blog-comments">
+              <div class="dull-bg author-widget">
+                <div class="author-group d-md-flex align-items-center justify-content-start">
+                  <div class="profile-pic">
+                    <img width="50" height="50" src="{{ blog.user.profile.profile_picture.url }}" alt="User" />
+                  </div>
+                  <div class="info">
+                    <span>Author</span>
+                    <h5>{{ blog.author.username }}</h5>
+                    <p>{{blog.user.profile.bio}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="blog-comments">
+                <div class="dull-bg">
+                  <h4 class="mb-0">Comments ({{ comment_count }})</h4>
+                  <hr />
+                  <ul id="comment-list">
+                    {% for comment in comments %}
+                    <li class="author-group d-md-flex align-items-center justify-content-start">
+                      <div class="profile-pic">
+                        <a href="javascript:void(0);" class="d-inline-block">
+                            {% if comment.user.profile.profile_picture %}
+                            
+                            <img width="70" height="70" src="{{comment.user.profile.profile_picture.url}}" alt="User"/>
+                            {% else %}
+                            <img width="70" height="70" src="{% static 'assets/img/profiles/avatar-04.jpg' %}" alt="User">
+                            {% endif %}
+                        </a>
+                      </div>
+                      <div class="info">
+                        <div class="head d-flex align-items-center justify-content-start">
+                          <h5>{{ comment.author }}</h5>
+                          {% comment %} <i class="fa-solid fa-circle"></i> {% endcomment %}
+                          <span><strong>{{comment.user.username}}</strong></span>
+                        </div>
+                        <p>{{ comment.text |truncatechars:200}}</p>
+                        <p>{{ comment.created_at|date:"d M Y" }}</p>
+                        {% comment %} <a href="blog-details.html#">Reply</a> {% endcomment %}
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+
+
+
+           <!-- New Comment Form -->
+        <div class="card new-comment white-bg">
+            {% if user.is_authenticated %}
+            <h4>Enter Details</h4>
+            
+                <form method="post" action="{% url 'blog_detail' blog.slug %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Add Comments</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3" placeholder="Enter Comments" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-gradient">Submit</button>
+                </form>
+            {% else %}
+                <p>You need to <a href="{% url 'login' %}">log in</a> to post comments.</p>
+            {% endif %}
+        </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  {% include "home/footer.html" %} 
+  {% endblock body %}
+  

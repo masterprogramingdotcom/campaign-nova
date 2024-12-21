@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  Contact Us
+{% endblock %}
+
+{% block body %}
+
+  {% include 'home/others_common/header.html' %}
+
+  <section class="promo-sec" style="background: url('{% static "images/promo-bg.jpg" %}') no-repeat center center / cover;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="promo-wrap text-center">
+            <h2 class="fw-bold text-white text-uppercase">Contact Us</h2>
+            <nav aria-label="breadcrumb w-75 mx-auto">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="{% url "index" %}">Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Contact Us</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+<main class="main sec-padding my-account">
+  <div class="container">
+    <div class="row g-5 align-self-stretch">
+      <div class="col-lg-6 col-12">
+        <div class="contact-us ct-bg p-sm-5 p-4 h-100">
+          <h2 class="sub-title mb-5 border-bottom pb-4">Get in Touch</h2>
+          <form id="contact-form" method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+              <input class="form-control" type="text" name="fullname" placeholder="Full Name *" required>
+            </div>
+            <div class="mb-3">
+              <input class="form-control" type="number" name="phone" placeholder="Phone *" required>
+            </div>
+            <div class="mb-3">
+              <input class="form-control" type="text" name="subject" placeholder="Subject *" required>
+            </div>
+            <div class="mb-3">
+              <textarea class="form-control" name="desc" placeholder="Description *" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Send Message</button>
+          </form>
+          <!-- Success Message -->
+          <div id="success-message" class="mt-3" style="display: none; color: green;">Message sent successfully!</div>
+          <div id="error-message" class="mt-3" style="display: none; color: red;"></div>
+          <!-- Contact Info Section -->
+          <div class="contact-widget widget mt-5 pt-4">
+            <h3 class="sub-title xs-title mb-4">Contact Info:</h3>
+            <ul class="list-unstyled">
+              <li><img class="me-3" src="{% static 'images/icons/tel-g.png' %}" alt="CampaignNova.com"><a href="tel:{{ company.mobile_number }}">{{ company.mobile_number }}</a></li>
+              <li><img class="me-3" src="{% static 'images/icons/loc-g.png' %}" alt="CampaignNova.com">{{ company.address }}</li>
+              <li><img class="me-3" src="{% static 'images/icons/message.png' %}" alt="CampaignNova.com"><a href="mailto:{{ company.email }}">{{ company.email }}</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-12">
+        <div class="google-map h-100">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3500.3487569270837!2d77.68242567533734!3d28.679212275639173!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390c8fd879a85417%3A0x8fe3e3de677b3321!2sMasterPrograming%20Co.%20Pvt.%20Ltd!5e0!3m2!1sen!2sin!4v1728836335760!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- AJAX Script -->
+<script>
+$(document).ready(function() {
+    $('#contact-form').on('submit', function(event) {
+        event.preventDefault();  // Prevent the default form submission
+
+        $.ajax({
+            url: "{% url 'contact' %}",  // URL for the contact view
+            type: "POST",
+            data: $(this).serialize(),  // Serialize form data
+            success: function(response) {
+                if (response.success) {
+                    $('#success-message').show().text("Message sent successfully!").fadeOut(5000);
+                    $('#contact-form')[0].reset();  // Reset the form
+                } else {
+                    $('#error-message').show().text("Error: " + response.error).fadeOut(5000);
+                }
+            },
+            error: function(xhr) {
+                $('#error-message').show().text("An error occurred: " + xhr.responseText).fadeOut(5000);
+            }
+        });
+    });
+});
+</script>
+
+
+
+{% include 'home/common/footer.html' %}
+{% endblock %}

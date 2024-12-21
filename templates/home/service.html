@@ -1,0 +1,233 @@
+{% extends "base.html" %} {% load static %} 
+{% block title %}Service{% endblock title %} 
+
+{% block body %} 
+{% include "home/header.html" %}
+
+
+<div class="breadcrumb breadcrumb-list mb-0">
+    <span class="primary-right-round"></span>
+    <div class="container">
+      <h1 class="text-white">Services</h1>
+      <ul>
+        <li><a href="{% url "index" %}">Home</a></li>
+        <li>Services</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="container">
+      <section class="services">
+        <!--ul-- class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="pills-all-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-all"
+              type="button"
+              role="tab"
+              aria-controls="pills-all"
+              aria-selected="true"
+            >
+              All Services
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="pills-coaching-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-coaching"
+              type="button"
+              role="tab"
+              aria-controls="pills-coaching"
+              aria-selected="false"
+            >
+              Coaching
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="pills-lessons-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-lessons"
+              type="button"
+              role="tab"
+              aria-controls="pills-lessons"
+              aria-selected="false"
+            >
+              Lessons
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="pills-coaches-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-coaches"
+              type="button"
+              role="tab"
+              aria-controls="pills-coaches"
+              aria-selected="false"
+            >
+              Coaches
+            </button>
+          </li>
+        </ul-->
+        <div class="tab-content" id="pills-tabContent">
+          <div
+            class="tab-pane fade show active"
+            id="pills-all"
+            role="tabpanel"
+            aria-labelledby="pills-all-tab"
+          >
+            <div class="row">
+              <div class="col-12 col-sm-12 col-md-4 col-lg-4 d-flex">
+                <div class="listing-item">
+                  <div class="listing-img">
+                    <a href="#">
+                      <img
+                        src="{% static 'assets/img/services/service-05.jpg' %}"
+                        class="img-fluid"
+                        alt="Service"
+                      />
+                    </a>
+                  </div>
+                  <div class="listing-content text-center">
+                    <h3 class="listing-title">
+                      <a href="#">Real-Time Booking</a>
+                    </h3>
+                    <p>
+                      Easily check availability and book turfs instantly
+                      with our user-friendly online reservation system.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-4 d-flex">
+                <div class="listing-item">
+                  <div class="listing-img">
+                    <a href="#">
+                      <img
+                        src="{% static 'assets/img/services/service-06.jpg' %}"
+                        class="img-fluid"
+                        alt="Service"
+                      />
+                    </a>
+                  </div>
+                  <div class="listing-content text-center">
+                    <h3 class="listing-title">
+                      <a href="#">Corporate Bookings</a>
+                    </h3>
+                    <p>
+                      Book our turfs for corporate functions and enjoy a
+                      professional setting with top-notch facilities.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-4 d-flex">
+                <div class="listing-item">
+                  <div class="listing-img">
+                    <a href="#">
+                      <img
+                        src="{% static 'assets/img/services/service-07.jpg' %}"
+                        class="img-fluid"
+                        alt="Service"
+                      />
+                    </a>
+                  </div>
+                  <div class="listing-content text-center">
+                    <h3 class="listing-title">
+                      <a href="#">Instant Confirmation</a>
+                    </h3>
+                    <p>
+                      Join our training sessions to refine your techniques
+                      and boost your game with personalized coaching
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-4 d-flex">
+                <div class="listing-item">
+                  <div class="listing-img">
+                    <a href="#">
+                      <img
+                        src="{% static 'assets/img/services/service-08.jpg' %}"
+                        class="img-fluid"
+                        alt="Service"
+                      />
+                    </a>
+                  </div>
+                  <div class="listing-content text-center">
+                    <h3 class="listing-title">
+                      <a href="#">Events & Tournaments</a>
+                    </h3>
+                    <p>
+                      Join our well-organized tournaments and events, where
+                      top-quality facilities and competitive play come
+                      together.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-4 d-flex">
+                <div class="listing-item">
+                  <div class="listing-img">
+                    <a href="#">
+                      <img
+                        src="{% static 'assets/img/services/service-09.jpg' %}"
+                        class="img-fluid"
+                        alt="Service"
+                      />
+                    </a>
+                  </div>
+                  <div class="listing-content text-center">
+                    <h3 class="listing-title">
+                      <a href="#">Professional Support</a>
+                    </h3>
+                    <p>
+                      Rent a premium court for your sports activities. Check
+                      availability, reserve easily, and enjoy
+                      state-of-the-art facilities at competitive rates.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-4 d-flex">
+                <div class="listing-item">
+                  <div class="listing-img">
+                    <a href="#">
+                      <img
+                        src="{% static 'assets/img/services/service-10.jpg' %}"
+                        class="img-fluid"
+                        alt="Service"
+                      />
+                    </a>
+                  </div>
+                  <div class="listing-content text-center">
+                    <h3 class="listing-title">
+                      <a href="#">Flexible Scheduling</a>
+                    </h3>
+                    <p>
+                      Modify or cancel bookings with ease through our
+                      flexible scheduling options to accommodate your
+                      changing plans.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+         
+        </div>
+      </section>
+    </div>
+  </div>
+
+
+  {% include "home/footer.html" %} 
+{% endblock body %}
