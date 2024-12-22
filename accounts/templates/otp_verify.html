@@ -1,0 +1,62 @@
+{% extends 'account_base.html' %}
+{% block content %}
+<div class="container h-p100">
+    <div class="row align-items-center justify-content-md-center h-p100">
+      <div class="col-12">
+        <div class="row justify-content-center g-0">
+          <div class="col-lg-5 col-md-5 col-12">
+
+                <div id="otpMessageBox"></div>
+                <h2>OTP Verification</h2>
+                <p>Enter the OTP sent to your mobile number: {{ mobile_number }}</p>
+                <form id="otpForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="mobile_number" value="{{ mobile_number }}">
+                    <div class="form-group">
+                    <input type="text" name="otp" placeholder="Enter OTP" required class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Verify OTP</button>
+                </form>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+  document.getElementById('otpForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch("{% url 'otp-verify' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+      body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+      const otpMessageBox = document.getElementById('otpMessageBox');
+      otpMessageBox.innerHTML = ""; // Clear any previous messages
+      if (data.success) {
+        otpMessageBox.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+        setTimeout(() => {
+          window.location.href = "{% url 'login' %}";
+        }, 2000); // Redirect after 2 seconds
+      } else {
+        otpMessageBox.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      const otpMessageBox = document.getElementById('otpMessageBox');
+      otpMessageBox.innerHTML = `<div class="alert alert-danger">An error occurred. Please try again later.</div>`;
+    });
+  });
+</script>
+{% endblock %}

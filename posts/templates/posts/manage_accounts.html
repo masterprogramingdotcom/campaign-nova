@@ -1,0 +1,198 @@
+{% extends "dash_base.html" %}
+{% load static %}
+{% block title %}Manage Social Media Accounts{% endblock %}
+{% block body %}
+{% include "common/header.html" %}
+
+<!-- section-content-right -->
+<div class="section-content-right">
+    {% include "common/header_c.html" %}
+
+    <!-- main-content-inner -->
+    <div class="main-content">
+        <!-- main-content-wrap -->
+        <div class="main-content-inner">
+            <div class="main-content-wrap">
+                <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+                    <div class="container">
+                        <h3 class="page-title">Manage Social Media Accounts</h3>
+
+                        <!-- Social Media Account Management Form -->
+                        <form id="social-media-form" class="form-manage-accounts">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="twitter" class="form-label">Twitter Handle:</label>
+                                <input type="text" id="twitter" name="twitter" value="{{ account.twitter|default:'' }}" class="form-control">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="facebook" class="form-label">Facebook Username:</label>
+                                <input type="text" id="facebook" name="facebook" value="{{ account.facebook|default:'' }}" class="form-control">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="instagram" class="form-label">Instagram Username:</label>
+                                <input type="text" id="instagram" name="instagram" value="{{ account.instagram|default:'' }}" class="form-control">
+                            </div>
+
+                            <button type="submit" class="btn btn-submit">Update Accounts</button>
+                        </form>
+
+                        <!-- Social Media Linking Options -->
+                        <div class="social-link-buttons mt-4">
+                            <a href="{% url 'twitter_login' %}" class="btn btn-twitter" id="link-twitter">Link Twitter</a>
+                            <a href="{% url 'facebook_login' %}" class="btn btn-facebook" id="link-facebook">Link Facebook</a>
+                            <a href="{% url 'instagram_login' %}" class="btn btn-instagram" id="link-instagram">Link Instagram</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- /main-content-wrap -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Container Style */
+    .container {
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+
+    /* Form Styling */
+    .form-manage-accounts .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .btn-submit {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn-submit:hover {
+        background-color: #0056b3;
+    }
+
+    /* Social Media Linking Buttons */
+    .social-link-buttons a {
+        display: inline-block;
+        text-align: center;
+        padding: 12px 24px;
+        margin-top: 15px;
+        font-size: 16px;
+        border-radius: 5px;
+        color: #fff;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        margin-right: 15px;
+    }
+
+    .btn-twitter {
+        background-color: #1DA1F2;
+    }
+
+    .btn-facebook {
+        background-color: #1877F2;
+    }
+
+    .btn-instagram {
+        background-color: #E4405F;
+    }
+
+    .social-link-buttons a:hover {
+        opacity: 0.8;
+    }
+
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Handle form submission with AJAX
+    $('#social-media-form').on('submit', function (e) {
+        e.preventDefault(); // Prevent default form submission
+
+        var twitter = $('#twitter').val();
+        var facebook = $('#facebook').val();
+        var instagram = $('#instagram').val();
+        var csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+
+        $.ajax({
+            url: "{% url 'manage_accounts' %}", // Replace with your view URL
+            method: "POST",
+            data: {
+                twitter: twitter,
+                facebook: facebook,
+                instagram: instagram,
+                csrfmiddlewaretoken: csrf_token
+            },
+            success: function (response) {
+                alert("Accounts updated successfully!");
+                // Optionally, you can handle the response to update the page or show a message
+            },
+            error: function (error) {
+                alert("An error occurred. Please try again.");
+            }
+        });
+    });
+
+    // Open social media login in new window
+    $('#link-twitter').on('click', function (e) {
+        e.preventDefault();
+        var popup = window.open("{% url 'twitter_login' %}", "Twitter Login", "width=600,height=600");
+
+        var checkPopupClosed = setInterval(function() {
+            if (popup.closed) {
+                clearInterval(checkPopupClosed);
+                alert("Twitter account linked successfully.");
+                // Optionally, you can trigger a refresh to update account data on the page
+                location.reload();
+            }
+        }, 500);  // Check every 500ms to see if the popup is closed
+    });
+
+    $('#link-facebook').on('click', function (e) {
+        e.preventDefault();
+        window.open("{% url 'facebook_login' %}", "Facebook Login", "width=600,height=600");
+    });
+
+    $('#link-instagram').on('click', function (e) {
+        e.preventDefault();
+        window.open("{% url 'instagram_login' %}", "Instagram Login", "width=600,height=600");
+    });
+</script>
+
+{% include "common/footer.html" %}
+{% endblock %}

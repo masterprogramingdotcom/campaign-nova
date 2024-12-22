@@ -15,6 +15,7 @@ from home.models import Contact
 def custom_404(request, exception):
     return render(request, "404.html", status=404)
 
+
 class HomeView(View):
     def get(self, request):
         return render(request, "home/index.html")

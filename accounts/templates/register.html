@@ -1,0 +1,126 @@
+{% extends 'account_base.html' %}
+{% load static %}
+{% block title %}Registration{% endblock %}
+
+{% block body_class %}hold-transition theme-primary bg-img{% endblock %}
+{% block body_style %}style="background-image: url({% static 'images/auth-bg/bg-16.jpg' %});"{% endblock %}
+
+{% block content %}
+<div class="container h-p100">
+  <div class="row align-items-center justify-content-md-center h-p100">
+    <div class="col-12">
+      <div class="row justify-content-center g-0">
+        <div class="col-lg-5 col-md-5 col-12">
+          <div class="bg-white rounded10 shadow-lg">
+            <div class="content-top-agile p-20 pb-0">
+              <h2 class="text-primary fw-600">Get started with Us</h2>
+              <p class="mb-0 text-fade">Register a new membership</p>
+            </div>
+            <div class="p-40">
+              <form id="registrationForm" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                  <div class="input-group mb-3">
+                    <span class="input-group-text bg-transparent"><i class="text-fade ti-user"></i></span>
+                    <input type="text" name="first_name" class="form-control ps-15 bg-transparent" placeholder="First Name" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group mb-3">
+                    <span class="input-group-text bg-transparent"><i class="text-fade ti-user"></i></span>
+                    <input type="text" name="last_name" class="form-control ps-15 bg-transparent" placeholder="Last Name" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group mb-3">
+                    <span class="input-group-text bg-transparent"><i class="text-fade ti-mobile"></i></span>
+                    <input type="text" name="mobile_number" class="form-control ps-15 bg-transparent" placeholder="Mobile Number" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group mb-3">
+                    <span class="input-group-text bg-transparent"><i class="text-fade ti-email"></i></span>
+                    <input type="email" name="email" class="form-control ps-15 bg-transparent" placeholder="Email" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group mb-3">
+                    <span class="input-group-text bg-transparent"><i class="text-fade ti-lock"></i></span>
+                    <input type="password" name="password" class="form-control ps-15 bg-transparent" placeholder="Password" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group mb-3">
+                    <span class="input-group-text bg-transparent"><i class="text-fade ti-user"></i></span>
+                    <select name="user_type" class="form-control ps-15 bg-transparent" required>
+                      <option value="">Select User Type</option>
+                      <option value="Customer">Customer</option>
+                      <option value="Vendor">Vendor</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-primary w-p100 mt-10">REGISTER</button>
+                  </div>
+                </div>
+              </form>
+              <div id="messageBox" class="text-center mt-3"></div>
+              
+              <div class="text-center">
+                <p class="mt-15 mb-0 text-fade">Already have an account?<a href="{% url "login" %}" class="text-primary ms-5">Sign In</a></p>
+              </div>
+              <div class="text-center">
+                <p class="mt-20 text-fade">- Register With -</p>
+                <p class="gap-items-2 mb-0">
+                  <a class="waves-effect waves-circle btn btn-social-icon btn-circle btn-facebook-light" href="#"><i class="fa fa-facebook"></i></a>
+                  <a class="waves-effect waves-circle btn btn-social-icon btn-circle btn-twitter-light" href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                  <a class="waves-effect waves-circle btn btn-social-icon btn-circle btn-instagram-light" href="#"><i class="fa fa-instagram"></i></a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('registrationForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    fetch("{% url 'register' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+      body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        const messageBox = document.getElementById('messageBox');
+        messageBox.innerHTML = ""; // Clear any previous messages
+        if (data.status === "success") {
+            messageBox.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+            form.reset(); // Reset form on success
+            window.location.href = `{% url 'otp-verify' %}?mobile_number=${data.mobile_number}`;
+        } else {
+            // Ensure `data.messages` exists and is an array before using `.map`
+            const errors = Array.isArray(data.messages)
+                ? data.messages.map(msg => `<p>${msg}</p>`).join("")
+                : `<p>${data.message || "An unexpected error occurred."}</p>`;
+            messageBox.innerHTML = `<div class="alert alert-danger">${errors}</div>`;
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        const messageBox = document.getElementById('messageBox');
+        messageBox.innerHTML = `<div class="alert alert-danger">An error occurred. Please try again later.</div>`;
+    });
+  });
+</script>
+{% endblock %}

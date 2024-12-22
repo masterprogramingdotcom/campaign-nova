@@ -23,6 +23,7 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         return self.create_user(mobile_number, password, **extra_fields)
 
+
 class User(AbstractBaseUser):
     # Mobile number as the unique identifier (username)
     mobile_number = models.CharField(max_length=15, unique=True)
@@ -33,14 +34,12 @@ class User(AbstractBaseUser):
         default=UserRole.CUSTOMER,  # Default to "Customer"
     )
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)  # Field for staff status
     is_superuser = models.BooleanField(default=False)
 
     # Required fields
     USERNAME_FIELD = "mobile_number"
-    REQUIRED_FIELDS = (
-        []
-    )  # No other required fields except the mobile number and password
+    REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
 
@@ -51,21 +50,14 @@ class User(AbstractBaseUser):
         """
         Return True if the user has the specified permission.
         """
-        return self.is_superuser
+        return self.is_superuser or self.is_staff
 
     def has_module_perms(self, app_label):
         """
         Return True if the user has permissions to view the app `app_label`.
         """
-        return self.is_superuser
+        return self.is_superuser or self.is_staff
 
-    @property
-    def is_staff(self):
-        """
-        Return True if the user is a staff member (needed for admin access).
-        """
-        return self.is_superuser
-    
 
 class Profile(models.Model):
     user = models.OneToOneField(

@@ -1,0 +1,193 @@
+{% extends "dash_base.html" %}
+{% load static %}
+{% block title %}Create Post{% endblock %}
+{% block body %}
+{% include "common/header.html" %}
+
+<!-- section-content-right -->
+<div class="section-content-right">
+    {% include "common/header_c.html" %}
+
+    <!-- main-content-inner -->
+    <div class="main-content">
+        <!-- main-content-wrap -->
+        <div class="main-content-inner">
+            <div class="main-content-wrap">
+                <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+                    <h3>Create Post</h3>
+                    <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                        <li>
+                            <a href="{% url "dashboard-home" %}"><div class="text-tiny">Dashboard</div></a>
+                        </li>
+                        <li>
+                            <i class="icon-chevron-right"></i>
+                        </li>
+                        <li>
+                            <a href="#"><div class="text-tiny">Posts</div></a>
+                        </li>
+                        <li>
+                            <i class="icon-chevron-right"></i>
+                        </li>
+                        <li>
+                            <div class="text-tiny">Create Post</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- form-create-post -->
+                <form id="create-post-form" class="tf-section-2 form-create-post" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="wg-box">
+                        <!-- Title -->
+                        <fieldset class="title">
+                            <div class="body-title mb-10">Title <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Enter post title" name="title" required="">
+                            <div class="text-tiny">Provide a title for your post.</div>
+                        </fieldset>
+
+                        <!-- Content -->
+                        <fieldset class="content">
+                            <div class="body-title mb-10">Content <span class="tf-color-1">*</span></div>
+                            <textarea class="mb-10" name="content" placeholder="Enter post content" required=""></textarea>
+                        </fieldset>
+
+                        <!-- Image -->
+                        <fieldset class="image">
+                            <div class="body-title mb-10">Post Image</div>
+                            <input type="file" name="image" accept="image/*">
+                        </fieldset>
+
+                        <!-- Social Media Sharing Options -->
+                        <fieldset class="social-media">
+                            <div class="body-title mb-10">Share on Social Media</div>
+                            <label>
+                                <input type="checkbox" name="share_to_twitter"> Share on Twitter
+                            </label>
+                            <label>
+                                <input type="checkbox" name="share_to_facebook"> Share on Facebook
+                            </label>
+                            <label>
+                                <input type="checkbox" name="share_to_instagram"> Share on Instagram
+                            </label>
+                        </fieldset>
+                    </div>
+
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary">Create Post</button>
+                    </div>
+                </form>
+                <!-- /form-create-post -->
+            </div>
+            <!-- /main-content-wrap -->
+        </div>
+    </div>
+</div>
+
+{% include "common/footer.html" %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Handle form submission via AJAX
+        $('#create-post-form').submit(function(event) {
+            event.preventDefault();  // Prevent the default form submission
+
+            var formData = new FormData(this);  // Create a new FormData object from the form
+
+           // Send the AJAX request
+            $.ajax({
+                url: '{% url "create_post" %}',  // URL where the form will be submitted
+                type: 'POST',
+                data: formData,
+                contentType: false,  // Don't set content type for FormData
+                processData: false,  // Don't process the data
+                success: function(response) {
+                    // On success, reset the form
+                    if (response.success) {
+                        alert('Post created successfully!');
+                        $('#create-post-form')[0].reset();  // Reset the form fields
+                    } else {
+                        // If there's an error, show the error message
+                        alert('Failed to create post: ' + response.error);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle server-side validation errors or other issues
+                    if (xhr.status === 400) {
+                        var response = xhr.responseJSON;  // Get the JSON response from the server
+                        alert('Error: ' + response.error);  // Show the error message from the server
+                    } else {
+                        alert('An error occurred while creating the post.');
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+
+
+<style>
+    /* General Styles for Form */
+    .form-create-post {
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .form-create-post fieldset {
+        margin-bottom: 20px;
+    }
+    .form-create-post input[type="text"],
+    .form-create-post textarea,
+    .form-create-post input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-top: 10px;
+    }
+    .form-create-post .btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .form-create-post .btn:hover {
+        background-color: #0056b3;
+    }
+
+    /* Preview Section Styles */
+    #preview-section {
+        margin-top: 40px;
+    }
+    .preview-box {
+        padding: 15px;
+        background-color: #f0f0f0;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .preview-box h5 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+    .preview-content {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    .preview-image img {
+        max-width: 200px;
+        border-radius: 6px;
+        margin-top: 10px;
+    }
+    .preview-image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+{% endblock body %}

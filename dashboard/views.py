@@ -14,13 +14,13 @@ from accounts.models import Profile
 
 class DashboardHomeView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        return render(request, "dashboard/index.html")
+        return render(request, "pages/index.html")
 
 
 class ProfileView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         profile = Profile.objects.get(user=request.user)
-        return render(request, "dashboard/profile.html", {"profile": profile})
+        return render(request, "pages/profile.html", {"profile": profile})
 
     def post(self, request, *args, **kwargs):
         # Get the user profile

@@ -39,6 +39,7 @@ LOCAL_APP = [
     "home.apps.HomeConfig",
     "blog.apps.BlogConfig",
     "dashboard",
+    "posts",
 ]
 
 
@@ -162,3 +163,14 @@ CKEDITOR_CONFIGS = {
         "width": "auto",
     },
 }
+
+DOMAIN_NAME = "http://127.0.0.1:8000"
+TWITTER_API_KEY = "WUT42mN7236fezf9LZruN8iJM"
+TWITTER_API_KEY_ID = "VDBhNW1OU0cxQ3JsWHg3T3BHWGY6MTpjaQ"
+TWITTER_API_KEY_ID_SECRET = "_1bDHjMEUIMUPHrD3Yz12a0vOO0_i8B-xF_psRZsuUQ1KPVtE9"
+TWITTER_API_SECRET_KEY = "FhdjDtyTuaGF188AHo8rlxrcSvkn6INkmlQd5tqIjpOANS5OvZ"
+INSTAGRAM_ACCOUNT_ID = ""
+INSTAGRAM_CLIENT_ID = ""
+INSTAGRAM_CLIENT_SECRET = ""
+FACEBOOK_APP_ID = ""
+FACEBOOK_APP_SECRET = ""

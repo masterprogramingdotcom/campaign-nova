@@ -15,12 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from django.conf.urls import handler404
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
 from CampaignNova.settings import base as settings
-from django.conf.urls import handler404
 
 handler404 = "home.views.custom_404"
 admin.site.site_header = "CampaignNova"
@@ -33,8 +33,8 @@ urlpatterns = [
     path("accounts/", include("accounts.urls"), name="accounts"),
     path("blog/", include("blog.urls"), name="blog"),
     path("dashboard/", include("dashboard.urls"), name="dashboard"),
+    path("dashboard/posts/", include("posts.urls")),
 ]
-
 
 
 # Serve static and media files during development

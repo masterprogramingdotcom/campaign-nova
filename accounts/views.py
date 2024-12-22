@@ -1,15 +1,14 @@
-import random
 import re
 
-import requests
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views import View
 
 from accounts.models import Profile, User, UserRole
+from accounts.utility import send_otp
 
 
 class RedirectAuthenticatedUserMixin:
@@ -25,7 +24,7 @@ class RedirectAuthenticatedUserMixin:
 
 class Register(RedirectAuthenticatedUserMixin, View):
     def get(self, request):
-        return render(request, "accounts/register.html")
+        return render(request, "register.html")
 
     def post(self, request):
         first_name = request.POST.get("first_name")
@@ -61,6 +60,12 @@ class Register(RedirectAuthenticatedUserMixin, View):
         if user_type not in UserRole.values:
             errors.append("Invalid user type.")
 
+        if User.objects.filter(mobile_number=mobile_number).exists():
+            return JsonResponse(
+                {"status": "error", "message": "Mobile number already registered."},
+                status=400,
+            )
+
         if errors:
             return JsonResponse({"status": "error", "messages": errors}, status=400)
 
@@ -81,23 +86,11 @@ class Register(RedirectAuthenticatedUserMixin, View):
             return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
 
-def send_otp(phone_number):
-    otp = random.randint(100000, 999999)
-    message = f"Your OTP is {otp}"
-    try:
-        url = f"https://2factor.in/API/V1/a2f2dd7d-2b67-11ed-9c12-0200cd936042/SMS/{phone_number}/{otp}/OTP1"
-        requests.get(url)
-        return otp
-    except Exception as e:
-        print(f"Error sending OTP: {e}")
-        return None
-
-
 class VerifyOTP(View):
     def get(self, request):
-        username = request.GET.get("username")
+        mobile_number = request.GET.get("mobile_number")
         try:
-            user = User.objects.get(mobile_number=username)
+            user = User.objects.get(mobile_number=mobile_number)
         except User.DoesNotExist:
             return JsonResponse({"message": "User not found."}, status=404)
 
@@ -106,19 +99,19 @@ class VerifyOTP(View):
         if profile.mobile_verified:
             return redirect("index")
 
-        otp = send_otp(username)
+        otp = send_otp(mobile_number)
         if otp:
             profile.otp = otp
             profile.save()
 
-        return render(request, "accounts/otp_verify.html", {"username": username})
+        return render(request, "otp_verify.html", {"mobile_number": mobile_number})
 
     def post(self, request):
-        username = request.POST.get("username")
+        mobile_number = request.POST.get("mobile_number")
         otp = request.POST.get("otp")
 
         try:
-            profile = Profile.objects.get(user__mobile_number=username)
+            profile = Profile.objects.get(user__mobile_number=mobile_number)
         except Profile.DoesNotExist:
             return JsonResponse({"message": "User not found."}, status=404)
 
@@ -133,37 +126,128 @@ class VerifyOTP(View):
             return JsonResponse({"message": "Invalid OTP!"}, status=400)
 
 
-class Login(RedirectAuthenticatedUserMixin, View):
+class Login(View):
     def get(self, request):
         next_url = request.GET.get("next", "")
-        return render(request, "accounts/login.html", {"next": next_url})
+        return render(request, "login.html", {"next": next_url})
 
     def post(self, request):
         mobile_number = request.POST.get("mobile_number")
         password = request.POST.get("password")
+        next_url = request.POST.get("next", "")
 
-        user = authenticate(request, username=mobile_number, password=password)
+        user = authenticate(request, mobile_number=mobile_number, password=password)
 
         if user is not None:
             if user.profile.mobile_verified:
                 login(request, user)
-                next_url = request.GET.get("next")
 
-                if user.user_type == UserRole.CUSTOMER:
-                    messages.success(request, "Welcome to the customer dashboard.")
-                    return redirect(next_url or "index")
-                elif user.user_type == UserRole.VENDOR:
-                    messages.success(request, "Welcome to the vendor dashboard.")
-                    return redirect(next_url or "vendor-dashboard")
-            else:
-                messages.warning(
-                    request,
-                    "Your mobile number is not verified. Please verify to continue.",
+                redirect_url = next_url or (
+                    "index"
+                    if user.user_type == UserRole.CUSTOMER
+                    else "vendor-dashboard"
                 )
-                return redirect(f"../../accounts/otp-verify?username={mobile_number}")
+                return JsonResponse(
+                    {
+                        "success": True,
+                        "message": "Login successful.",
+                        "redirect_url": redirect_url,
+                    }
+                )
+            else:
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "message": "Mobile number not verified. Redirecting to OTP verification.",
+                        "redirect_url": f"../otp-verify?mobile_number={mobile_number}",
+                    },
+                    status=400,
+                )
         else:
-            messages.error(request, "Invalid mobile number or password.")
-            return render(request, "accounts/login.html")
+            return JsonResponse(
+                {"success": False, "message": "Invalid mobile number or password."},
+                status=400,
+            )
+
+
+class ForgotPassword(View):
+    def get(self, request):
+        if request.is_authenticated:
+            return redirect("/")
+        return render(request, "forgot_password.html")
+
+    def post(self, request):
+        mobile_number = request.POST.get("mobile_number")
+
+        try:
+            user = User.objects.get(mobile_number=mobile_number)
+        except User.DoesNotExist:
+            return JsonResponse(
+                {"success": False, "message": "Mobile number not registered."},
+                status=400,
+            )
+
+        try:
+            otp = send_otp(mobile_number)
+            if otp:
+                user.profile.otp = otp
+                user.profile.save()
+                return JsonResponse(
+                    {"success": True, "message": "OTP sent to your mobile number."}
+                )
+            else:
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "message": "Failed to send OTP. Please try again later.",
+                    },
+                    status=500,
+                )
+        except Exception as e:
+            print(f"Error in ForgotPassword: {e}")
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "An unexpected error occurred. Please try again.",
+                },
+                status=500,
+            )
+
+
+class VerifyOTPAndResetPassword(View):
+    def get(self, request):
+        if request.is_authenticated:
+            return redirect("/")
+
+        return render(request, "reset_password.html")
+
+    def post(self, request):
+        mobile_number = request.POST.get("mobile_number")
+        otp = request.POST.get("otp")
+        new_password = request.POST.get("new_password")
+
+        try:
+            user_profile = Profile.objects.get(user__mobile_number=mobile_number)
+        except Profile.DoesNotExist:
+            return JsonResponse(
+                {"success": False, "message": "Invalid mobile number."}, status=400
+            )
+
+        if user_profile.otp == otp:
+            user_profile.otp = None
+            user_profile.save()
+
+            user = user_profile.user
+            user.password = make_password(new_password)
+            user.save()
+
+            return JsonResponse(
+                {"success": True, "message": "Password reset successfully."}
+            )
+        else:
+            return JsonResponse(
+                {"success": False, "message": "Invalid OTP."}, status=400
+            )
 
 
 class Logout(View):
